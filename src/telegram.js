@@ -225,21 +225,23 @@ class TelegramBot {
 
     async alwaysOnlineConfigChange(ctx) {
         let alwaysOnline = global.settings.alwaysOnline;
+        let lotsRaise = global.settings.lotsRaise;
         if(alwaysOnline) alwaysOnline = 0;
         else alwaysOnline = 1;
 
-        global.settings = await loadSettings({alwaysOnline});
+        global.settings = await loadSettings({alwaysOnline, lotsRaise});
 
         const msg = `🟢 Всегда онлайн: ${(global.settings.alwaysOnline) ? 'Вкл' : 'Выкл'}`
         ctx.replyWithHTML(msg, this.mainKeyboard.reply());
     }
 
     async lotsRaiseConfigChange(ctx) {
+        let alwaysOnline = global.settings.alwaysOnline;
         let lotsRaise = global.settings.lotsRaise;
         if(lotsRaise) lotsRaise = 0;
         else lotsRaise = 1;
 
-        global.settings = await loadSettings({lotsRaise});
+        global.settings = await loadSettings({alwaysOnline, lotsRaise});
 
         const msg = `⬆️ Автоподнятие предложений: ${(global.settings.lotsRaise) ? 'Вкл' : 'Выкл'}`
         ctx.replyWithHTML(msg, this.mainKeyboard.reply());
