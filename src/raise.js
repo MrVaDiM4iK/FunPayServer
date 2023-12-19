@@ -19,7 +19,7 @@ async function enableLotsRaise() {
 
     await raiseLotsIfTime(categories);
     setInterval(() => {
-        raiseLotsIfTime(categories);
+        if(global.settings.lotsRaise) raiseLotsIfTime(categories);
     },
     10000);
 }

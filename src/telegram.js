@@ -1,7 +1,7 @@
 const c = global.chalk;
 const Telegraf = global.telegraf;
 const Keyboard = global.telegram_keyboard;
-const { setConst, load, updateFile, getConst } = global.storage;
+const { setConst, load, updateFile, getConst, loadConfig, loadSettings } = global.storage;
 const log = global.log;
 
 class TelegramBot {
@@ -31,6 +31,7 @@ class TelegramBot {
         this.editGoodsKeyboard = this.getEditGoodsKeyboard();
         this.selectIssueTypeKeyboard = this.getSelectIssueTypeKeyboard();
         this.backKeyboard = this.getBackKeyboard();
+        this.configKeyboard = this.getConfigKeyboard();
 
         this.waitingForLotDelete = false;
         this.waitingForLotName = false;
@@ -54,12 +55,27 @@ class TelegramBot {
             const msg = ctx.update.message.text;
             
             if(!this.isUserAuthed(ctx)) {
-                ctx.reply('Привет! 😄\nДля авторизации введи свой ник в настройках FunPay Server, после чего перезапусти бота.');
+                ctx.reply('КУДААА МЫ ЛЕЗЕМ??');
                 return;
             }
     
             if(msg == '🔥 Статус 🔥') {
                 this.replyStatus(ctx);
+                return;
+            }
+
+            if(msg === '⚙️ Конфиг ⚙️') {
+                this.replyConfig(ctx);
+                return;
+            }
+
+            if(msg === '🟢 Всегда онлайн 🟢') {
+                this.alwaysOnlineConfigChange(ctx);
+                return;
+            }
+
+            if(msg === '⬆️ Автоподнятие предложений ⬆️') {
+                this.lotsRaiseConfigChange(ctx);
                 return;
             }
     
@@ -154,7 +170,8 @@ class TelegramBot {
         const keyboard = Keyboard.make([
             ['🔥 Статус 🔥'],
             ['🚀 Редактировать автовыдачу 🚀'],
-            ['❔ Инфо ❔']
+            ['❔ Инфо ❔'],
+            ['⚙️ Конфиг ⚙️']
         ]);
 
         return keyboard;
@@ -164,6 +181,16 @@ class TelegramBot {
         const keyboard = Keyboard.make([
             ['☑️ Добавить товар ☑️', '📛 Удалить товар 📛'],
             ['⬇️ Получить файл автовыдачи ⬇️', '⬆️ Загрузить файл автовыдачи ⬆️'],
+            ['🔙 Назад 🔙']
+        ]);
+
+        return keyboard;
+    }
+
+    getConfigKeyboard() {
+        const keyboard = Keyboard.make([
+            ['🟢 Всегда онлайн 🟢'],
+            ['⬆️ Автоподнятие предложений ⬆️'],
             ['🔙 Назад 🔙']
         ]);
 
@@ -186,6 +213,36 @@ class TelegramBot {
         ]);
 
         return keyboard;
+    }
+
+
+    async replyConfig(ctx) {
+        const alwaysOnline = (global.settings.alwaysOnline) ? 'Вкл' : 'Выкл';
+        const lotsRaise = (global.settings.lotsRaise) ? 'Вкл' : 'Выкл';
+        const msg = `⚙️ Конфиг:\n\n⬆️ Автоподнятие предложений: <b>${lotsRaise}</b>\n🟢 Всегда онлайн: <b>${alwaysOnline}</b>`
+        ctx.replyWithHTML(msg, this.configKeyboard.reply());
+    }
+
+    async alwaysOnlineConfigChange(ctx) {
+        let alwaysOnline = global.settings.alwaysOnline;
+        if(alwaysOnline) alwaysOnline = 0;
+        else alwaysOnline = 1;
+
+        global.settings = await loadSettings({alwaysOnline});
+
+        const msg = `🟢 Всегда онлайн: ${(global.settings.alwaysOnline) ? 'Вкл' : 'Выкл'}`
+        ctx.replyWithHTML(msg, this.mainKeyboard.reply());
+    }
+
+    async lotsRaiseConfigChange(ctx) {
+        let lotsRaise = global.settings.lotsRaise;
+        if(lotsRaise) lotsRaise = 0;
+        else lotsRaise = 1;
+
+        global.settings = await loadSettings({lotsRaise});
+
+        const msg = `⬆️ Автоподнятие предложений: ${(global.settings.lotsRaise) ? 'Вкл' : 'Выкл'}`
+        ctx.replyWithHTML(msg, this.mainKeyboard.reply());
     }
 
     async replyStatus(ctx) {

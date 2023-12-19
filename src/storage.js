@@ -77,7 +77,7 @@ async function initStorage() {
     }
 }
 
-async function loadSettings() {
+async function loadSettings(params = {}) {
     try {
         let uri = `${_dirname}/settings.txt`;
         let settings = {};
@@ -116,7 +116,7 @@ async function loadSettings() {
 
             await saveConfig(settings);
         } else {
-            settings = await loadConfig();
+            settings = await loadConfig(params);
         }
 
         if(!checkGoldenKey(settings.golden_key)) {
@@ -131,14 +131,14 @@ async function loadSettings() {
     }
 }
 
-function loadConfig() {
+function loadConfig(params = {}) {
     config.read(`${_dirname}/settings.txt`);
     
     let settings = {
         golden_key: config.get('FunPay', 'golden_key'),
         userAgent: config.get('FunPay', 'user_agent'),
-        alwaysOnline: Number(config.get('FunPay', 'alwaysOnline')),
-        lotsRaise: Number(config.get('FunPay', 'lotsRaise')),
+        alwaysOnline: params.alwaysOnline ?? Number(config.get('FunPay', 'alwaysOnline')),
+        lotsRaise: params.lotsRaise ?? Number(config.get('FunPay', 'lotsRaise')),
         goodsStateCheck: Number(config.get('FunPay', 'goodsStateCheck')),
         autoIssue: Number(config.get('FunPay', 'autoDelivery')),
         autoResponse: Number(config.get('FunPay', 'autoResponse')),
@@ -466,4 +466,4 @@ async function askSettings() {
     return askSettings;
 }
 
-export { updateFile, initStorage, load, loadSettings, getConst, setConst, loadAutoIssueFile };
+export { updateFile, initStorage, load, loadSettings, loadConfig, getConst, setConst, loadAutoIssueFile };

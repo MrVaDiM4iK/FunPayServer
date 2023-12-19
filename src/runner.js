@@ -27,7 +27,9 @@ class Runner {
     async start() {
         await this.loop();
         this.startup = false;
-        setInterval(() => this.loop(), 6000);
+        setInterval(() => {
+            if(global.settings.alwaysOnline) this.loop();
+        }, 6000);
         //log('Обработка событий запущена.', 'g');
     }
 

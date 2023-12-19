@@ -41,6 +41,7 @@ if(settings.goodsStateCheck == true)
 
 const runner = new Runner();
 
+
 // Starting threads
 if(settings.lotsRaise == true) 
     enableLotsRaise();
