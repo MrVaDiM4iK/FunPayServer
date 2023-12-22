@@ -30,7 +30,7 @@ class Runner {
         setInterval(() => {
             if(global.settings.alwaysOnline) this.loop();
         }, 6000);
-        //log('Обработка событий запущена.', 'g');
+        log('Обработка событий запущена.', 'g');
     }
 
     async loop() {

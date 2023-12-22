@@ -17,7 +17,7 @@ async function enableGoodsStateCheck() {
 
 async function checkGoodsState() {
     try {
-        //log(`Проверяем состояние товаров на наличие изменений...`, 'c');
+        log(`Проверяем состояние товаров на наличие изменений...`, 'c');
         const goodsNow = await getActiveProducts(global.appData.id);
         const goodsBackup = goodsState;
 
@@ -34,7 +34,7 @@ async function checkGoodsState() {
             }
         }
 
-        //log(`Проверка состояния товаров завершена.`);
+        log(`Проверка состояния товаров завершена.`);
     } catch (err) {
         log(`Ошибка при проверке активности предложений: ${err}`, 'r');
     }

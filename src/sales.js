@@ -45,7 +45,7 @@ async function checkForNewOrders() {
             }
 
             if(global.telegramBot && settings.newOrderNotification) {
-                global.telegramBot.sendNewOrderNotification(order);
+                await global.telegramBot.sendNewOrderNotification(order);
             }
     
             log(`Новый заказ ${c.yellowBright(order.id)} от покупателя ${c.yellowBright(order.buyerName)} на сумму ${c.yellowBright(order.price)} ₽.`);

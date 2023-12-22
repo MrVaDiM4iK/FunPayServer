@@ -78,6 +78,16 @@ class TelegramBot {
                 this.lotsRaiseConfigChange(ctx);
                 return;
             }
+
+            if(msg === '✔️ Уведомления о новых заказах ✔️') {
+                this.newOrderNonAutoNotificationConfigChange(ctx);
+                return;
+            }
+
+            if(msg === '✉️ Уведомления о новых сообщениях ✉️') {
+                this.newMessageNotificationConfigChange(ctx);
+                return;
+            }
     
             if(msg == '🚀 Редактировать автовыдачу 🚀') {
                 this.editAutoIssue(ctx);
@@ -167,84 +177,96 @@ class TelegramBot {
     }
 
     getMainKeyboard() {
-        const keyboard = Keyboard.make([
+        return Keyboard.make([
             ['🔥 Статус 🔥'],
             ['🚀 Редактировать автовыдачу 🚀'],
             ['❔ Инфо ❔'],
             ['⚙️ Конфиг ⚙️']
         ]);
-
-        return keyboard;
     }
 
     getEditGoodsKeyboard() {
-        const keyboard = Keyboard.make([
+        return Keyboard.make([
             ['☑️ Добавить товар ☑️', '📛 Удалить товар 📛'],
             ['⬇️ Получить файл автовыдачи ⬇️', '⬆️ Загрузить файл автовыдачи ⬆️'],
             ['🔙 Назад 🔙']
         ]);
-
-        return keyboard;
     }
 
     getConfigKeyboard() {
-        const keyboard = Keyboard.make([
-            ['🟢 Всегда онлайн 🟢'],
-            ['⬆️ Автоподнятие предложений ⬆️'],
+        return Keyboard.make([
+            ['🟢 Всегда онлайн 🟢', '⬆️ Автоподнятие предложений ⬆️'],
+            ['✔️ Уведомления о новых заказах ✔️', '✉️ Уведомления о новых сообщениях ✉️'],
             ['🔙 Назад 🔙']
         ]);
-
-        return keyboard;
     }
 
     getSelectIssueTypeKeyboard() {
-        const keyboard = Keyboard.make([
+        return Keyboard.make([
             ['Инструкция (выдача одного и того же текста)'],
             ['Аккаунты (выдача разных текстов по очереди)'],
             ['🔙 Назад 🔙']
         ]);
-
-        return keyboard;
     }
 
     getBackKeyboard() {
-        const keyboard = Keyboard.make([
+        return Keyboard.make([
             ['🔙 Назад 🔙']
         ]);
-
-        return keyboard;
     }
 
 
     async replyConfig(ctx) {
         const alwaysOnline = (global.settings.alwaysOnline) ? 'Вкл' : 'Выкл';
         const lotsRaise = (global.settings.lotsRaise) ? 'Вкл' : 'Выкл';
-        const msg = `⚙️ Конфиг:\n\n⬆️ Автоподнятие предложений: <b>${lotsRaise}</b>\n🟢 Всегда онлайн: <b>${alwaysOnline}</b>`
+        const newOrderNonAutoNotification = (global.settings.newOrderNonAutoNotification) ? 'Вкл' : 'Выкл';
+        const newMessageNotification = (global.settings.newMessageNotification) ? 'Вкл' : 'Выкл';
+        const msg = `⚙️ Конфиг:\n\n⬆️ Автоподнятие предложений: <b>${lotsRaise}</b>\n🟢 Всегда онлайн: <b>${alwaysOnline}</b>\n✔️ Уведомления о новых заказах (не автовыдача): <b>${newOrderNonAutoNotification}</b>\n✉️ Уведомления о новых сообщениях: <b>${newMessageNotification}</b>`
         ctx.replyWithHTML(msg, this.configKeyboard.reply());
     }
 
-    async alwaysOnlineConfigChange(ctx) {
+
+    async updateConfig(ctx, settingName, displayText) {
         let alwaysOnline = global.settings.alwaysOnline;
         let lotsRaise = global.settings.lotsRaise;
-        if(alwaysOnline) alwaysOnline = 0;
-        else alwaysOnline = 1;
+        let newOrderNonAutoNotification = global.settings.newOrderNonAutoNotification;
+        let newMessageNotification = global.settings.newMessageNotification;
 
-        global.settings = await loadSettings({alwaysOnline, lotsRaise});
+        switch (settingName) {
+            case 'alwaysOnline':
+                alwaysOnline = alwaysOnline ? 0 : 1;
+                break;
+            case 'lotsRaise':
+                lotsRaise = lotsRaise ? 0 : 1;
+                break;
+            case 'newOrderNonAutoNotification':
+                newOrderNonAutoNotification = newOrderNonAutoNotification ? 0 : 1;
+                break;
+            case 'newMessageNotification':
+                newMessageNotification = newMessageNotification ? 0 : 1;
+                break;
+        }
 
-        const msg = `🟢 Всегда онлайн: ${(global.settings.alwaysOnline) ? 'Вкл' : 'Выкл'}`
+        global.settings = await loadSettings({ alwaysOnline, lotsRaise, newOrderNonAutoNotification, newMessageNotification });
+
+        const msg = `${displayText}: <b>${(global.settings[settingName]) ? 'Вкл' : 'Выкл'}</b>`;
         ctx.replyWithHTML(msg, this.mainKeyboard.reply());
     }
 
+    async alwaysOnlineConfigChange(ctx) {
+        await this.updateConfig(ctx, 'alwaysOnline', '🟢 Всегда онлайн');
+    }
+
     async lotsRaiseConfigChange(ctx) {
-        let alwaysOnline = global.settings.alwaysOnline;
-        let lotsRaise = global.settings.lotsRaise;
-        if(lotsRaise) lotsRaise = 0;
-        else lotsRaise = 1;
+        await this.updateConfig(ctx, 'lotsRaise', '⬆️ Автоподнятие предложений');
+    }
 
-        global.settings = await loadSettings({alwaysOnline, lotsRaise});
+    async newOrderNonAutoNotificationConfigChange(ctx) {
+        await this.updateConfig(ctx, 'newOrderNonAutoNotification', '✉️ Уведомления о новых заказах (не автовыдача)');
+    }
 
-        const msg = `⬆️ Автоподнятие предложений: ${(global.settings.lotsRaise) ? 'Вкл' : 'Выкл'}`
-        ctx.replyWithHTML(msg, this.mainKeyboard.reply());
+    async newMessageNotificationConfigChange(ctx) {
+        await this.updateConfig(ctx, 'newMessageNotification', '✉️ Уведомления о новых сообщениях');
     }
 
     async replyStatus(ctx) {
@@ -485,13 +507,35 @@ class TelegramBot {
     }
 
     async sendNewMessageNotification(message) {
+        if(message.content.startsWith(`Покупатель ${message.user} оплатил заказ`)) {
+            if(global.settings.newOrderNonAutoNotification == true) await this.sendNewOrderNonAutoNotification(message);
+            return;
+        }
+
         let msg = `💬 <b>Новое сообщение</b> от пользователя <b><i>${message.user}</i></b>.\n\n`;
         msg += `${message.content}\n\n`;
         msg += `<i>${message.time}</i> | <a href="https://funpay.com/chat/?node=${message.node}">Перейти в чат</a>`
 
         let chatId = this.getChatID();
         if(!chatId) return;
-        this.bot.telegram.sendMessage(chatId, msg, {
+        await this.bot.telegram.sendMessage(chatId, msg, {
+            parse_mode: 'HTML',
+            disable_web_page_preview: true
+        });
+    }
+
+    async sendNewOrderNonAutoNotification(message) {
+        const orderId = message.content.match(/#([A-Z0-9]{0,8})/);
+        const goodName = message.content.split(`\n`);
+
+        let msg = `✔️ <b>Новый заказ</b> <a href="https://funpay.com/orders/${orderId[0].replace('#', '')}/">${orderId[0]}</a>.\n\n`;
+        msg += `👤 <b>Покупатель:</b> <a href="https://funpay.com/chat/?node=${message.node}/"><b>${message.user}</b></a>\n`;
+        msg += `🛍️ <b>Товар:</b> <code>${goodName[0].slice(orderId.index+11)}</code>\n`;
+        msg += `<i>${message.time}</i> | <a href="https://funpay.com/chat/?node=${message.node}">Перейти в чат</a>`
+
+        let chatId = this.getChatID();
+        if(!chatId) return;
+        await this.bot.telegram.sendMessage(chatId, msg, {
             parse_mode: 'HTML',
             disable_web_page_preview: true
         });
@@ -504,7 +548,7 @@ class TelegramBot {
 
         let chatId = this.getChatID();
         if(!chatId) return;
-        this.bot.telegram.sendMessage(chatId, msg, {
+        await this.bot.telegram.sendMessage(chatId, msg, {
             parse_mode: 'HTML',
             disable_web_page_preview: true
         });

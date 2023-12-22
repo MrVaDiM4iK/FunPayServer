@@ -63,7 +63,7 @@ if(settings.autoResponse == true) {
     enableAutoResponse();
 }
 
-if(settings.newMessageNotification == true && settings.greetingMessage == true) {
+if(settings.newMessageNotification == true || settings.newOrderNonAutoNotification == true || settings.greetingMessage == true) {
     runner.registerNewIncomingMessageCallback(onNewIncomingMessage);
 }
 
@@ -117,9 +117,7 @@ function onNewIncomingMessage(message) {
 }
 
 function onNewOrder() {
-    if(settings.autoIssue == true) {
-        checkForNewOrders();
-    }
+    checkForNewOrders();
 
     if(settings.goodsStateCheck == true) {
         checkGoodsState();

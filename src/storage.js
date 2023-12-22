@@ -100,6 +100,7 @@ async function loadSettings(params = {}) {
                 telegramToken: answers.telegramToken,
                 userName: answers.userName,
                 newMessageNotification: answers.newMessageNotification,
+                newOrderNonAutoNotification: answers.newOrderNonAutoNotification,
                 newOrderNotification: answers.newOrderNotification,
                 lotsRaiseNotification: answers.lotsRaiseNotification,
                 deliveryNotification: answers.deliveryNotification,
@@ -116,7 +117,7 @@ async function loadSettings(params = {}) {
 
             await saveConfig(settings);
         } else {
-            settings = await loadConfig(params);
+            settings = loadConfig(params);
         }
 
         if(!checkGoldenKey(settings.golden_key)) {
@@ -149,7 +150,8 @@ function loadConfig(params = {}) {
         telegramBot: Number(config.get('Telegram', 'enabled')),
         telegramToken: config.get('Telegram', 'token'),
         userName: config.get('Telegram', 'userName'),
-        newMessageNotification: Number(config.get('Telegram', 'newMessageNotification')),
+        newMessageNotification: params.newMessageNotification ?? Number(config.get('Telegram', 'newMessageNotification')),
+        newOrderNonAutoNotification: params.newOrderNonAutoNotification ?? Number(config.get('Telegram', 'newOrderNonAutoNotification')),
         newOrderNotification: Number(config.get('Telegram', 'newOrderNotification')),
         lotsRaiseNotification: Number(config.get('Telegram', 'lotsRaiseNotification')),
         deliveryNotification: Number(config.get('Telegram', 'deliveryNotification')),
