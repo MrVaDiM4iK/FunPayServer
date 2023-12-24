@@ -1,6 +1,6 @@
 {
   "name": "funpayserver",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Fork from https://github.com/NightStrang6r/FunPayServer with my additions. CLI app for auto-managing your FunPay account",
   "main": "src/index.js",
   "dependencies": {

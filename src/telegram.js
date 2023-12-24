@@ -90,7 +90,7 @@ class TelegramBot {
             }
 
             if(msg === '3. ⬆️') {
-                this.lotsRaiseConfigChange(ctx);
+                this.lotsRaiseNotificationConfigChange(ctx);
                 return;
             }
 
@@ -276,7 +276,7 @@ class TelegramBot {
         global.settings = await loadSettings({ alwaysOnline, lotsRaise, newOrderNonAutoNotification, newMessageNotification, lotsRaiseNotification, deliveryNotification });
 
         const msg = `${displayText}: <b>${(global.settings[settingName]) ? 'Вкл' : 'Выкл'}</b>`;
-        ctx.replyWithHTML(msg, this.mainKeyboard.reply());
+        ctx.replyWithHTML(msg, this.configKeyboard.reply());
     }
 
     async toggleAllConfig(ctx, type) {
@@ -298,7 +298,7 @@ class TelegramBot {
             deliveryNotification: status
         });
         const msg = `✅ Все настройки были: <b>${status ? 'Включены' : 'Отключены'}</b>!`;
-        ctx.replyWithHTML(msg, this.mainKeyboard.reply());
+        ctx.replyWithHTML(msg, this.configKeyboard.reply());
     }
 
     async alwaysOnlineConfigChange(ctx) {
