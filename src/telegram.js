@@ -55,7 +55,7 @@ class TelegramBot {
             const msg = ctx.update.message.text;
             
             if(!this.isUserAuthed(ctx)) {
-                ctx.reply('КУДААА МЫ ЛЕЗЕМ??');
+                ctx.reply('Привет! 😄\nДля авторизации введи свой ник в настройках FunPay Server, после чего перезапусти бота.');
                 return;
             }
     
@@ -79,16 +79,31 @@ class TelegramBot {
                 return;
             }
 
-            if(msg === '✔️ Уведомления о новых заказах ✔️') {
+            if(msg === '1. 📦') {
                 this.newOrderNonAutoNotificationConfigChange(ctx);
                 return;
             }
 
-            if(msg === '✉️ Уведомления о новых сообщениях ✉️') {
+            if(msg === '2. ✉️') {
                 this.newMessageNotificationConfigChange(ctx);
                 return;
             }
-    
+
+            if(msg === '3. ⬆️') {
+                this.lotsRaiseConfigChange(ctx);
+                return;
+            }
+
+            if(msg === '4. 🚚') {
+                this.deliveryNotificationConfigChange(ctx);
+                return;
+            }
+
+            if(['🔥 Отключить всё 🔥', '✅ Включить всё ✅'].includes(msg)) {
+                this.toggleAllConfig(ctx, msg);
+                return;
+            }
+
             if(msg == '🚀 Редактировать автовыдачу 🚀') {
                 this.editAutoIssue(ctx);
                 return;
@@ -196,7 +211,8 @@ class TelegramBot {
     getConfigKeyboard() {
         return Keyboard.make([
             ['🟢 Всегда онлайн 🟢', '⬆️ Автоподнятие предложений ⬆️'],
-            ['✔️ Уведомления о новых заказах ✔️', '✉️ Уведомления о новых сообщениях ✉️'],
+            ['1. 📦', '2. ✉️', '3. ⬆️', '4. 🚚'],
+            ['🔥 Отключить всё 🔥', '✅ Включить всё ✅'],
             ['🔙 Назад 🔙']
         ]);
     }
@@ -221,7 +237,9 @@ class TelegramBot {
         const lotsRaise = (global.settings.lotsRaise) ? 'Вкл' : 'Выкл';
         const newOrderNonAutoNotification = (global.settings.newOrderNonAutoNotification) ? 'Вкл' : 'Выкл';
         const newMessageNotification = (global.settings.newMessageNotification) ? 'Вкл' : 'Выкл';
-        const msg = `⚙️ Конфиг:\n\n⬆️ Автоподнятие предложений: <b>${lotsRaise}</b>\n🟢 Всегда онлайн: <b>${alwaysOnline}</b>\n✔️ Уведомления о новых заказах (не автовыдача): <b>${newOrderNonAutoNotification}</b>\n✉️ Уведомления о новых сообщениях: <b>${newMessageNotification}</b>`
+        const lotsRaiseNotification = (global.settings.lotsRaiseNotification) ? 'Вкл' : 'Выкл';
+        const deliveryNotification = (global.settings.deliveryNotification) ? 'Вкл' : 'Выкл';
+        const msg = `⚙️ Конфиг:\n❗ Измененные параметры применяются до первого рестарта и не перезаписывают файл настроек.\n\n⬆️ Автоподнятие предложений: <b>${lotsRaise}</b>\n🟢 Всегда онлайн: <b>${alwaysOnline}</b>\n\n1. 📦 Уведомления о новых заказах (не автовыдача): <b>${newOrderNonAutoNotification}</b>\n2. ✉️ Уведомления о новых сообщениях: <b>${newMessageNotification}</b>\n3. ⬆️ Уведомления о поднятиях: <b>${lotsRaiseNotification}</b>\n4. 🚚 Уведомления о выдаче товара: <b>${deliveryNotification}</b>\n\nЧтобы не обновлялся ваш онлайн на сайте, отключите все настройки.`
         ctx.replyWithHTML(msg, this.configKeyboard.reply());
     }
 
@@ -231,6 +249,8 @@ class TelegramBot {
         let lotsRaise = global.settings.lotsRaise;
         let newOrderNonAutoNotification = global.settings.newOrderNonAutoNotification;
         let newMessageNotification = global.settings.newMessageNotification;
+        let lotsRaiseNotification = global.settings.lotsRaiseNotification;
+        let deliveryNotification = global.settings.deliveryNotification;
 
         switch (settingName) {
             case 'alwaysOnline':
@@ -245,11 +265,39 @@ class TelegramBot {
             case 'newMessageNotification':
                 newMessageNotification = newMessageNotification ? 0 : 1;
                 break;
+            case 'lotsRaiseNotification':
+                lotsRaiseNotification = lotsRaiseNotification ? 0 : 1;
+                break;
+            case 'deliveryNotification':
+                deliveryNotification = deliveryNotification ? 0 : 1;
+                break;
         }
 
-        global.settings = await loadSettings({ alwaysOnline, lotsRaise, newOrderNonAutoNotification, newMessageNotification });
+        global.settings = await loadSettings({ alwaysOnline, lotsRaise, newOrderNonAutoNotification, newMessageNotification, lotsRaiseNotification, deliveryNotification });
 
         const msg = `${displayText}: <b>${(global.settings[settingName]) ? 'Вкл' : 'Выкл'}</b>`;
+        ctx.replyWithHTML(msg, this.mainKeyboard.reply());
+    }
+
+    async toggleAllConfig(ctx, type) {
+        let status;
+        switch (type) {
+            case '🔥 Отключить всё 🔥':
+                status = 0;
+                break;
+            case '✅ Включить всё ✅':
+                status = 1;
+                break;
+        }
+        global.settings = await loadSettings({
+            alwaysOnline: status,
+            lotsRaise: status,
+            newOrderNonAutoNotification: status,
+            newMessageNotification: status,
+            lotsRaiseNotification: status,
+            deliveryNotification: status
+        });
+        const msg = `✅ Все настройки были: <b>${status ? 'Включены' : 'Отключены'}</b>!`;
         ctx.replyWithHTML(msg, this.mainKeyboard.reply());
     }
 
@@ -262,12 +310,21 @@ class TelegramBot {
     }
 
     async newOrderNonAutoNotificationConfigChange(ctx) {
-        await this.updateConfig(ctx, 'newOrderNonAutoNotification', '✉️ Уведомления о новых заказах (не автовыдача)');
+        await this.updateConfig(ctx, 'newOrderNonAutoNotification', '📦 Уведомления о новых заказах (не автовыдача)');
     }
 
     async newMessageNotificationConfigChange(ctx) {
         await this.updateConfig(ctx, 'newMessageNotification', '✉️ Уведомления о новых сообщениях');
     }
+
+    async lotsRaiseNotificationConfigChange(ctx) {
+        await this.updateConfig(ctx, 'lotsRaiseNotification', '️⬆️ Уведомления о поднятиях');
+    }
+
+    async deliveryNotificationConfigChange(ctx) {
+        await this.updateConfig(ctx, 'deliveryNotification', '🚚 Уведомления о выдаче товара');
+    }
+
 
     async replyStatus(ctx) {
         const time = Date.now();

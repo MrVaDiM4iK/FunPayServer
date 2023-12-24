@@ -153,8 +153,8 @@ function loadConfig(params = {}) {
         newMessageNotification: params.newMessageNotification ?? Number(config.get('Telegram', 'newMessageNotification')),
         newOrderNonAutoNotification: params.newOrderNonAutoNotification ?? Number(config.get('Telegram', 'newOrderNonAutoNotification')),
         newOrderNotification: Number(config.get('Telegram', 'newOrderNotification')),
-        lotsRaiseNotification: Number(config.get('Telegram', 'lotsRaiseNotification')),
-        deliveryNotification: Number(config.get('Telegram', 'deliveryNotification')),
+        lotsRaiseNotification: params.lotsRaiseNotification ?? Number(config.get('Telegram', 'lotsRaiseNotification')),
+        deliveryNotification: params.deliveryNotification ?? Number(config.get('Telegram', 'deliveryNotification')),
         proxy: {
             useProxy: Number(config.get('Proxy', 'enabled')),
             host: config.get('Proxy', 'host'),

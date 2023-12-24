@@ -55,9 +55,6 @@ userName: MyTelegramLogin
 # Уведомления о новом сообщении. [1 - включить, 0 - выключить]
 newMessageNotification: 1
 
-# Уведомления о новых заказах (не автовыдача). [1 - включить, 0 - выключить]
-newOrderNonAutoNotification: 1
-
 # Уведомления о новом заказе. [1 - включить, 0 - выключить]
 newOrderNotification: 1
 

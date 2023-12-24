@@ -1,7 +1,7 @@
 {
   "name": "funpayserver",
-  "version": "0.5.6",
-  "description": "CLI app for auto-managing your FunPay account",
+  "version": "0.6.0",
+  "description": "Fork from https://github.com/NightStrang6r/FunPayServer with my additions. CLI app for auto-managing your FunPay account",
   "main": "src/index.js",
   "dependencies": {
     "chalk": "^5.0.1",
@@ -23,12 +23,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/NightStrang6r/FunPayServer.git"
+    "url": "git+https://github.com/MrVaDiM4iK/FunPayServer.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/NightStrang6r/FunPayServer/issues"
+    "url": "https://github.com/MrVaDiM4iK/FunPayServer/issues"
   },
-  "homepage": "https://github.com/NightStrang6r/FunPayServer#readme"
+  "homepage": "https://github.com/MrVaDiM4iK/FunPayServer#readme"
 }

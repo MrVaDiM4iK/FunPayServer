@@ -77,63 +77,72 @@ function enableUserDataUpdate(timeout) {
 
 async function getUserData() {
     let result = false;
-    try {
-        const options = {
-            method: 'GET',
-            headers: headers
-        };
-
-        const resp = await fetch(getConst('api'), options);
-        const body = await resp.text();
-
-        const doc = parseDOM(body);
-        const appData = JSON.parse(doc.querySelector("body").getAttribute('data-app-data'));
-
-        if(!doc.querySelector(".user-link-name")) {
-            log(`Неверный golden_key.`, 'r');
-            return false;
-        }
-
-        const userName = doc.querySelector(".user-link-name").innerHTML;
-        const balanceEl = doc.querySelector(".badge-balance");
-        const salesEl = doc.querySelector(".badge-trade");
-        const timestamp = Date.now();
-
-        let balance = 0;
-        let sales = 0;
-
-        if(balanceEl && balanceEl != null) balance = balanceEl.innerHTML;
-        if(salesEl && salesEl != null) sales = salesEl.innerHTML;
-
-        let setCookie = "";
-        resp.headers.forEach((val, key) => {
-            if(key == "set-cookie") {
-                setCookie = val;
-                return;
-            }
-        });
-
-        const PHPSESSID = setCookie.split(';')[0].split('=')[1];
-
-        if(appData.userId && appData.userId != 0) {
-            result = {
-                id: appData.userId,
-                csrfToken: appData["csrf-token"],
-                sessid: PHPSESSID,
-                userName: userName,
-                balance: balance,
-                sales: sales,
-                lastUpdate: timestamp
+    if(
+        global.settings.alwaysOnline == true ||
+        global.settings.lotsRaise == true ||
+        global.settings.newOrderNonAutoNotification == true ||
+        global.settings.newMessageNotification == true ||
+        global.settings.lotsRaiseNotification == true ||
+        global.settings.deliveryNotification == true
+    ) {
+        try {
+            const options = {
+                method: 'GET',
+                headers: headers
             };
-            
-            global.appData = result;
-        } else {
-            log(`Необходимо авторизоваться.`);
+
+            const resp = await fetch(getConst('api'), options);
+            const body = await resp.text();
+
+            const doc = parseDOM(body);
+            const appData = JSON.parse(doc.querySelector("body").getAttribute('data-app-data'));
+
+            if (!doc.querySelector(".user-link-name")) {
+                log(`Неверный golden_key.`, 'r');
+                return false;
+            }
+
+            const userName = doc.querySelector(".user-link-name").innerHTML;
+            const balanceEl = doc.querySelector(".badge-balance");
+            const salesEl = doc.querySelector(".badge-trade");
+            const timestamp = Date.now();
+
+            let balance = 0;
+            let sales = 0;
+
+            if (balanceEl && balanceEl != null) balance = balanceEl.innerHTML;
+            if (salesEl && salesEl != null) sales = salesEl.innerHTML;
+
+            let setCookie = "";
+            resp.headers.forEach((val, key) => {
+                if (key == "set-cookie") {
+                    setCookie = val;
+                    return;
+                }
+            });
+
+            const PHPSESSID = setCookie.split(';')[0].split('=')[1];
+
+            if (appData.userId && appData.userId != 0) {
+                result = {
+                    id: appData.userId,
+                    csrfToken: appData["csrf-token"],
+                    sessid: PHPSESSID,
+                    userName: userName,
+                    balance: balance,
+                    sales: sales,
+                    lastUpdate: timestamp
+                };
+
+                global.appData = result;
+            } else {
+                log(`Необходимо авторизоваться.`);
+            }
+        } catch (err) {
+            log(`Ошибка при получении данных аккаунта: ${err}`, 'r');
         }
-    } catch (err) {
-        log(`Ошибка при получении данных аккаунта: ${err}`, 'r');
+        return result;
     }
-    return result;
 }
 
 export { headers, getUserData, countTradeProfit, enableUserDataUpdate };

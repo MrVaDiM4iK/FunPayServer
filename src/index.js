@@ -43,32 +43,22 @@ const runner = new Runner();
 
 
 // Starting threads
-if(settings.lotsRaise == true) 
-    enableLotsRaise();
+if(settings.goodsStateCheck == true || settings.autoIssue == true) runner.registerNewOrderCallback(onNewOrder);
 
-if(settings.goodsStateCheck == true || settings.autoIssue == true) {
-    runner.registerNewOrderCallback(onNewOrder);
-}
+if(settings.goodsStateCheck == true) enableGoodsStateCheck();
 
-if(settings.goodsStateCheck == true) {
-    enableGoodsStateCheck();
-}
+if(settings.autoIssue == true) enableAutoIssue();
 
-if(settings.autoIssue == true) {
-    enableAutoIssue();
-}
+if(settings.lotsRaise == true) enableLotsRaise();
+
+if(settings.greetingMessage == true && settings.greetingMessageText) await addUsersToFile();
+
+if(settings.newMessageNotification == true || settings.newOrderNonAutoNotification == true || settings.greetingMessage == true)
+    runner.registerNewIncomingMessageCallback(onNewIncomingMessage);
 
 if(settings.autoResponse == true) {
     runner.registerNewMessageCallback(onNewMessage);
     enableAutoResponse();
-}
-
-if(settings.newMessageNotification == true || settings.newOrderNonAutoNotification == true || settings.greetingMessage == true) {
-    runner.registerNewIncomingMessageCallback(onNewIncomingMessage);
-}
-
-if(settings.greetingMessage == true && settings.greetingMessageText) {
-    await addUsersToFile();
 }
 
 enableUserDataUpdate(300 * 1000);
@@ -80,6 +70,7 @@ if(settings.alwaysOnline == true
     || settings.goodsStateCheck == true
     || settings.newMessageNotification == true
     || settings.newOrderNotification == true
+    || settings.newOrderNonAutoNotification == true
     || settings.greetingMessage == true) {
     await runner.start();
 }

@@ -88,7 +88,7 @@ async function processMessages() {
 
 async function processIncomingMessages(message) {
     // Notification
-    if(global.telegramBot && global.settings.newMessageNotification) {
+    if(global.telegramBot && (global.settings.newMessageNotification || global.settings.newOrderNonAutoNotification)) {
         if(settings.watermark.length > 1) {
             if(!message.content.includes(settings.watermark)) {
                 await global.telegramBot.sendNewMessageNotification(message);
