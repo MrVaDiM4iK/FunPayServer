@@ -568,6 +568,7 @@ class TelegramBot {
             if(global.settings.newOrderNonAutoNotification == true) await this.sendNewOrderNonAutoNotification(message);
             return;
         }
+        if(global.settings.newMessageNotification == false) return;
 
         let msg = `💬 <b>Новое сообщение</b> от пользователя <b><i>${message.user}</i></b>.\n\n`;
         msg += `${message.content}\n\n`;

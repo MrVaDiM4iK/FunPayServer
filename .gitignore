@@ -6,3 +6,4 @@ assets
 build.bat
 build.js
 .idea
+package-lock.json
