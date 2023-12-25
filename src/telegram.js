@@ -586,8 +586,8 @@ class TelegramBot {
         const orderId = message.content.match(/#([A-Z0-9]{0,8})/);
         const goodName = message.content.split(`\n`);
 
-        let msg = `✔️ <b>Новый заказ</b> <a href="https://funpay.com/orders/${orderId[0].replace('#', '')}/">${orderId[0]}</a>.\n\n`;
-        msg += `👤 <b>Покупатель:</b> <a href="https://funpay.com/chat/?node=${message.node}/"><b>${message.user}</b></a>\n`;
+        let msg = `✔️ <b>Новый заказ</b> <a href="https://funpay.com/orders/${orderId[0].replace('#', '')}">${orderId[0]}</a>.\n\n`;
+        msg += `👤 <b>Покупатель:</b> <a href="https://funpay.com/chat/?node=${message.node}"><b>${message.user}</b></a>\n`;
         msg += `🛍️ <b>Товар:</b> <code>${goodName[0].slice(orderId.index+11)}</code>\n`;
         msg += `<i>${message.time}</i> | <a href="https://funpay.com/chat/?node=${message.node}">Перейти в чат</a>`
 
